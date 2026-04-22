@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Panel de Administración</h1>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Líneas de Investigación</h5>
+                <p>Gestionar líneas investigativas</p>
+                <a href="/admin/lineas" class="btn btn-primary">Gestionar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Fuentes</h5>
+                <p>Configurar fuentes de convocatorias</p>
+                <a href="/admin/fuentes" class="btn btn-primary">Gestionar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Alertas</h5>
+                <p>Configurar notificaciones</p>
+                <a href="/admin/alertas" class="btn btn-primary">Gestionar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

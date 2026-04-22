@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Gestión de Alertas</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>Nueva Alerta</h5>
+        <form id="form-alerta">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Frecuencia</label>
+                <select class="form-select" id="frecuencia">
+                    <option value="inmediata">Inmediata</option>
+                    <option value="diaria">Diaria</option>
+                    <option value="semanal">Semanal</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Crear Alerta</button>
+        </form>
+    </div>
+</div>
+
+<div id="lista-alertas"></div>
+
+<script>
+function cargarAlertas() {
+    fetch('/api/alertas/')
+        .then(r => r.json())
+        .then(alertas => {
+            const container = document.getElementById('lista-alertas');
+            container.innerHTML = '';
+            alertas.forEach(alerta => {
+                const card = document.createElement('div');
+                card.className = 'card mb-2';
+                card.innerHTML = `
+                    <div class="card-body">
+                        <h5>${alerta.email}</h5>
+                        <span class="badge bg-info">${alerta.frecuencia}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+}
+cargarAlertas();
+</script>
+{% endblock %}

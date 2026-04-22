@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Convocatorias</h1>
+
+<div class="row mb-3 align-items-center">
+    <div class="col-md-3">
+        <input type="text" class="form-control" id="buscar" placeholder="Buscar...">
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filtro-estado">
+            <option value="">Todos los estados</option>
+            <option value="abierta">Abiertas</option>
+            <option value="proximamente">Próximamente</option>
+            <option value="cerrada">Cerradas</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="filtro-linea">
+            <option value="">Todas las líneas</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="check-vigentes" checked onchange="buscar()">
+            <label class="form-check-label" for="check-vigentes">
+                Solo vigentes
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100" onclick="buscar()">Buscar</button>
+    </div>
+</div>
+
+<div id="resultados"></div>
+
+<script>
+function buscar() {
+    const texto = document.getElementById('buscar').value;
+    const estado = document.getElementById('filtro-estado').value;
+    const linea = document.getElementById('filtro-linea').value;
+    const vigentes = document.getElementById('check-vigentes').checked;
+    
+    let url = '/api/convocatorias/?';
+    if (texto) url += `buscar=${texto}&`;
+    if (estado) url += `estado=${estado}&`;
+    if (linea) url += `linea_id=${linea}&`;
+    if (vigentes) url += `vigentes=true&`;
+    
+    fetch(url)
+        .then(r => r.json())
+        .then(data => {
+            const container = document.getElementById('resultados');
+            container.innerHTML = `<p class="text-muted">${data.total} resultados encontrados</p>`;
+            
+            data.items.forEach(conv => {
+                const card = document.createElement('div');
+                card.className = 'card mb-3';
+                card.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">${conv.titulo}</h5>
+                        <p class="card-text">${conv.descripcion}</p>
+                        <div class="mb-2">
+                            <span class="badge bg-primary">${conv.fuente}</span>
+                            <span class="badge bg-success">Relevancia: ${Math.round(conv.puntuacion)}%</span>
+                        </div>
+                        <div class="mb-2">
+                            ${conv.fecha_apertura ? `<span class="badge bg-info text-dark">Apertura: ${conv.fecha_apertura}</span>` : ''}
+                            ${conv.fecha_cierre ? `<span class="badge bg-warning text-dark">Cierre: ${conv.fecha_cierre}</span>` : ''}
+                            ${(conv.dias_restantes !== null && conv.dias_restantes !== undefined) ? `<span class="badge bg-secondary">Faltan: ${conv.dias_restantes} días</span>` : ''}
+                        </div>
+                        ${conv.url ? `<a href="${conv.url}" target="_blank" class="btn btn-sm btn-primary">Ver convocatoria</a>` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+}
+
+// Cargar líneas para filtro
+fetch('/api/lineas/')
+    .then(r => r.json())
+    .then(lineas => {
+        const select = document.getElementById('filtro-linea');
+        lineas.forEach(linea => {
+            const option = document.createElement('option');
+            option.value = linea.id;
+            option.textContent = linea.nombre;
+            select.appendChild(option);
+        });
+    });
+
+// Cargar automáticamente
+buscar();
+</script>
+{% endblock %}

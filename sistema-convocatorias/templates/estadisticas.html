@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Estadísticas</h1>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5>Convocatorias por Fuente</h5>
+                <canvas id="chart-fuentes"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5>Convocatorias por Línea</h5>
+                <canvas id="chart-lineas"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="text-muted mt-3">Gráficos con Chart.js (requiere implementación adicional)</p>
+{% endblock %}

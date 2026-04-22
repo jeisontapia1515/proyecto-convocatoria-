@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Gestión de Líneas de Investigación</h1>
+
+<button class="btn btn-primary mb-3" onclick="mostrarFormulario()">Nueva Línea</button>
+
+<div id="form-linea" style="display:none;" class="card mb-3">
+    <div class="card-body">
+        <h5>Nueva Línea de Investigación</h5>
+        <form id="form-nueva-linea">
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Palabras Clave (separadas por coma)</label>
+                <input type="text" class="form-control" id="palabras_clave" required>
+            </div>
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <button type="button" class="btn btn-secondary" onclick="ocultarFormulario()">Cancelar</button>
+        </form>
+    </div>
+</div>
+
+<div id="lista-lineas"></div>
+
+<script>
+function mostrarFormulario() {
+    document.getElementById('form-linea').style.display = 'block';
+}
+function ocultarFormulario() {
+    document.getElementById('form-linea').style.display = 'none';
+}
+
+function cargarLineas() {
+    fetch('/api/lineas/')
+        .then(r => r.json())
+        .then(lineas => {
+            const container = document.getElementById('lista-lineas');
+            container.innerHTML = '';
+            lineas.forEach(linea => {
+                const card = document.createElement('div');
+                card.className = 'card mb-2';
+                card.innerHTML = `
+                    <div class="card-body">
+                        <h5>${linea.nombre}</h5>
+                        <p>${linea.descripcion}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+}
+
+document.getElementById('form-nueva-linea').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new URLSearchParams();
+    formData.append('nombre', document.getElementById('nombre').value);
+    formData.append('descripcion', document.getElementById('descripcion').value);
+    formData.append('palabras_clave', document.getElementById('palabras_clave').value);
+    
+    fetch('/api/lineas/', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(() => {
+        ocultarFormulario();
+        cargarLineas();
+        alert('Línea creada exitosamente');
+    });
+});
+
+cargarLineas();
+</script>
+{% endblock %}

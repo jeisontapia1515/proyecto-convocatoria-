@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Gestión de Fuentes</h1>
+
+<div id="lista-fuentes" class="mt-4"></div>
+
+<script>
+fetch('/api/fuentes/')
+    .then(r => r.json())
+    .then(fuentes => {
+        const container = document.getElementById('lista-fuentes');
+        fuentes.forEach(fuente => {
+            const card = document.createElement('div');
+            card.className = 'card mb-2';
+            card.innerHTML = `
+                <div class="card-body">
+                    <h5>${fuente.nombre}</h5>
+                    <p><a href="${fuente.url}" target="_blank">${fuente.url}</a></p>
+                    <span class="badge ${fuente.activa ? 'bg-success' : 'bg-secondary'}">
+                        ${fuente.activa ? 'Activa' : 'Inactiva'}
+                    </span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    });
+</script>
+{% endblock %}

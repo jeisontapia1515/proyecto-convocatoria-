@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Dashboard - Sistema de Convocatorias</h1>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Convocatorias Activas</h5>
+                <p class="card-text display-4" id="total-activas">-</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Nuevas Esta Semana</h5>
+                <p class="card-text display-4" id="nuevas-semana">-</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Por Cerrar (7 días)</h5>
+                <p class="card-text display-4" id="por-cerrar">-</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Alta Relevancia</h5>
+                <p class="card-text display-4" id="alta-relevancia">-</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>Últimas Convocatorias</h3>
+        <div id="ultimas-convocatorias" class="mt-3">
+            <p>Cargando...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Cargar estadísticas
+fetch('/api/convocatorias/?limit=10')
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('total-activas').textContent = data.total;
+        
+        // Mostrar últimas convocatorias
+        const container = document.getElementById('ultimas-convocatorias');
+        container.innerHTML = '';
+        
+        data.items.forEach(conv => {
+            const card = document.createElement('div');
+            card.className = 'card mb-2';
+            card.innerHTML = `
+                <div class="card-body">
+                    <h5 class="card-title">${conv.titulo}</h5>
+                    <p class="card-text">${conv.descripcion}</p>
+                    <span class="badge bg-primary">${conv.fuente}</span>
+                    <span class="badge bg-success">Relevancia: ${Math.round(conv.puntuacion)}%</span>
+                    ${conv.url ? `<a href="${conv.url}" target="_blank" class="btn btn-sm btn-primary">Ver más</a>` : ''}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    });
+</script>
+{% endblock %}
